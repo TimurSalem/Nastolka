@@ -234,8 +234,6 @@ while running:
 		
 		except ValueError:
 			print('ex')
-		# except RuntimeError:
-		# 	print('run')
 		except SyntaxError:
 			pass
 	
