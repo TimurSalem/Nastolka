@@ -112,15 +112,15 @@ class Button:
 '''подключение к серверу'''
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-# sock.connect(('45.67.58.176', 8080)) #для подключения к внешнему vds серверу (должен быть запущен)
+# sock.connect(('45.67.58.176', 8080))
 sock.connect(('localhost', 8080))
 '''.....................'''
 
 pygame.init()
 size = width, height = 1920, 1080
 
-screen = pygame.display.set_mode(size, pygame.FULLSCREEN, vsync=1)
-# screen = pygame.display.set_mode(size, vsync=1)
+# screen = pygame.display.set_mode(size, pygame.FULLSCREEN, vsync=1)
+screen = pygame.display.set_mode(size, vsync=1)
 
 score = 0
 
