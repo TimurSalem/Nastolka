@@ -25,30 +25,55 @@ def load_image(name, colorkey=None):
 player_image = load_image('tree.png')
 
 
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, x, y, radius):
+        super().__init__(all_sprites)
+        self.image = pygame.Surface((2 * 50, 2 * 50),
+                                    pygame.SRCALPHA, 32)
+        pygame.draw.circle(screen, (255, 255, 255), (x, y), radius)
+        self.rect = pygame.Rect(x - radius, y - radius, 2 * radius, 2 * radius)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, *group):
         super().__init__(*group)
         self.image = load_image("tree.png")
         self.rect = self.image.get_rect()
-        self.coords = [(370, 160), (570, 150),(220, 55)]
+        self.coords = [[(370, 160)], [(570, 150)], [(220, 55)]]
         self.tek = 0
+        self.path_r = 0
         self.rect.x = width - 200
         self.rect.y = height - 100
 
     def update(self, *args):
         try:
-            self.rect.x, self.rect.y = self.coords[self.tek]
-            self.tek += 1
-        except IndexError:
-            if self.tek != len(self.coords):
-                self.rect.x, self.rect.y = self.coords[0]
+            print(self.tek)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                for i in all_sprites.sprites():
+                    if i.rect.collidepoint(mouse_pos) and i != self.image:
+                        c = (i.rect.x - 30, i.rect.y - 40)
+                        self.rect.x, self.rect.y = c
+                        j1 = 0
+                        k1 = 0
+                        for j in self.coords:
+                            for k in j:
+                                if k == c:
+                                    self.path_r = k1
+                                    break
+                                k1 += 1
+                            if self.path_r == k1:
+                                self.tek = j1
+                            j1 += 1
+                        break
+            elif len(self.coords[self.tek]) >= 1 and self.tek != 0:
+                self.rect.x, self.rect.y = self.coords[self.tek][self.path_r]
+                self.path_r += 1
             else:
-                sys.exit()
-
-    def move(self, dx, dy):
-        self.pos_x += dx
-        self.pos_y += dy
-        self.update()
+                self.rect.x, self.rect.y = self.coords[self.tek][self.path_r]
+                self.tek += 1
+        except IndexError:
+            sys.exit()
 
 
 if __name__ == '__main__':
@@ -64,7 +89,6 @@ if __name__ == '__main__':
     all_sprites.draw(screen)
 
     running = True
-    balls = []
     # (-1, -1)
     # (x, y, kx, ky)
     screen.fill((0, 0, 0))
@@ -73,13 +97,17 @@ if __name__ == '__main__':
     draw = False
     coord = (0, 0)
     r = 10
-    fps = 10
+    fps = 40
     move = False
     last_event = None
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                move = True
+                last_event = event
+                clock.tick(fps)
             if event.type == pygame.KEYDOWN:
                 move = True
                 last_event = event
@@ -88,14 +116,15 @@ if __name__ == '__main__':
                 move = False
         if move:
             all_sprites.update(last_event)
+            clock.tick(fps)
         clock.tick(fps)
         screen.fill((0, 0, 0))
         pygame.draw.line(screen, (255, 255, 255), [100, 0], [width - 100, height], 5)
         pygame.draw.line(screen, (255, 255, 255), [420, 220], [width, height - 200], 5)
-        pygame.draw.circle(screen, (255, 255, 255), (422, 220), 20)
-        pygame.draw.circle(screen, (255, 255, 255), (620, 210), 20)
-        pygame.draw.circle(screen, (255, 255, 255), (270, 115), 20)
-        pygame.draw.circle(screen, (255, 255, 255), (width - 150, height - 40), 20)
+        Ball(422, 220, 20)
+        Ball(620, 210, 20)
+        Ball(270, 115, 20)
+        Ball(width - 150, height - 40, 20)
         all_sprites.draw(screen)
         clock.tick(fps)
         pygame.display.flip()
