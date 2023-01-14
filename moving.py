@@ -39,7 +39,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(*group)
         self.image = load_image("tree.png")
         self.rect = self.image.get_rect()
-        self.coords = [[(370, 160)], [(570, 150)], [(220, 55)]]
+        self.coords = [[(370, 160)], [(570, 150)], [(220, 55), (100, 55)]]
         self.tek = 0
         self.path_r = 0
         self.rect.x = width - 200
@@ -59,20 +59,24 @@ class Player(pygame.sprite.Sprite):
                         for j in self.coords:
                             for k in j:
                                 if k == c:
-                                    self.path_r = k1
+                                    self.path_r = k1 + 1
+                                    self.tek = j1
+                                    print(',,', self.path_r)
                                     break
                                 k1 += 1
-                            if self.path_r == k1:
-                                self.tek = j1
+                            k1 = 0
+                            print('    ', self.path_r)
                             j1 += 1
                         break
-            elif len(self.coords[self.tek]) >= 1 and self.tek != 0:
+                print(self.tek, self.path_r)
+            elif len(self.coords[self.tek]) >= 1 and self.tek != 0 and self.path_r != 0:
                 self.rect.x, self.rect.y = self.coords[self.tek][self.path_r]
                 self.path_r += 1
-            else:
+            elif self.tek == 0:
                 self.rect.x, self.rect.y = self.coords[self.tek][self.path_r]
                 self.tek += 1
         except IndexError:
+
             sys.exit()
 
 
@@ -97,7 +101,7 @@ if __name__ == '__main__':
     draw = False
     coord = (0, 0)
     r = 10
-    fps = 40
+    fps = 35
     move = False
     last_event = None
     while running:
@@ -108,6 +112,8 @@ if __name__ == '__main__':
                 move = True
                 last_event = event
                 clock.tick(fps)
+            if event.type == pygame.MOUSEBUTTONUP:
+                move = False
             if event.type == pygame.KEYDOWN:
                 move = True
                 last_event = event
